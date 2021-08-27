@@ -1,0 +1,45 @@
+<?php
+
+namespace App;
+
+use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use Sluggable;
+
+    //Cuando recibe campos de forma masiva solo aceptara los siguientes
+    protected $fillable = [
+        'title', 'body', 'iframe', 'image', 'user_id'
+    ];
+    /**
+     * Return the sluggable configuration array for this model.
+     *
+     * @return array
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source'    => 'title',
+                'onUpdate'  => true
+            ]
+        ];
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function getGetExcerptAttribute(){
+        return substr($this->body,0,140);
+    }
+    //Esta funcion corresponde al metodo que se esta usando en la vista con el nombre get_image
+    //get-NOMBRE-DEL-METODO-Attribute
+    public function getGetImageAttribute(){
+        if($this->image){
+            return url("storage/$this->image");
+        }
+    }
+}
